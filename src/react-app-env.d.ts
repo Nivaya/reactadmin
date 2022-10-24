@@ -1,1 +1,23 @@
 /// <reference types="react-scripts" />
+declare global {
+  interface ResponseSuccess<T = {}> {
+    success: boolean;
+    errorMessage?: string;
+    data: T
+  }
+
+  interface IPagination<T> {
+    success: boolean;
+    errorMessage?: string;
+    data: {
+      list: T[];
+      current: 1;
+      pageSize: number;
+      total: number;
+      totalPage: number;
+    }
+  }
+
+}
+
+export {}

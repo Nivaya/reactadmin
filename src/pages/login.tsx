@@ -12,8 +12,11 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { doLogin } from "../api/login";
+import axios from "axios";
+import request from "../utils/request";
+import { Cookies, useCookies } from "react-cookie";
 
 function Copyright(props: any) {
   return (
@@ -31,21 +34,27 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 
-export default function SignIn() {
+export default function Login() {
+  const cookie = new Cookies()
+  const csrf = cookie.get('csrftoken')
   let navigate = useNavigate();
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
+
+
+    const loginInfo = {
       username: data.get('username'),
       password: data.get('password'),
-    });
-    let url = 'http://localhost:9000/user/login/';
-    axios.post(url, data, {headers: {'Content-Type': 'application/json'}}
-    ).then(res => {
+      csrfmiddlewaretoken: data.get('csrfmiddlewaretoken'),
+    }
+
+    console.log(loginInfo);
+    let url = 'http://localhost:8000/login/';
+    request.post(url, loginInfo).then(res => {
       if (res.status === 200 && res.data.code === 1) {
         alert('登录成功。');
-        navigate('/dashboard')
+        // navigate('/dashboard')
       } else {
         console.log(res)
         alert('登录失败：' + res.data.msg)
@@ -53,10 +62,33 @@ export default function SignIn() {
     })
   };
 
+  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   const data = new FormData(event.currentTarget);
+  //   console.log(data)
+  // const username=data.get('username');
+  // const password=data.get('password');
+  // const userinfo:Login = {
+  //   username: data.get('username'),
+  //   password: data.get('password'),
+  // }
+
+  // console.log(userinfo);
+  // doLogin(userinfo).then((res) => {
+  //   if (res.success) {
+  //     console.log(res.data)
+  //     localStorage.setItem('token', res.data.token)
+  //   } else {
+  //     console.log(res.errorMessage)
+  //   }
+  //
+  // })
+// };
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        <CssBaseline />
+        <CssBaseline/>
         <Box
           sx={{
             marginTop: 8,
@@ -65,13 +97,14 @@ export default function SignIn() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+            <LockOutlinedIcon/>
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+            <input name="csrfmiddlewaretoken" value={csrf} type="hidden"/>
             <TextField
               margin="normal"
               required
@@ -93,14 +126,14 @@ export default function SignIn() {
               autoComplete="current-password"
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value="remember" color="primary"/>}
               label="Remember me"
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{mt: 3, mb: 2}}
             >
               Sign In
             </Button>
@@ -118,7 +151,7 @@ export default function SignIn() {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Copyright sx={{mt: 8, mb: 4}}/>
       </Container>
     </ThemeProvider>
   );

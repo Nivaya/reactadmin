@@ -18,6 +18,9 @@ declare global {
     }
   }
 
+  // interface Windows {
+  //   logout(): void;
+  // }
 }
 
 export {}

@@ -11,12 +11,13 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-import {useNavigate} from "react-router-dom";
-import {doLogin} from "../api/login";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from "react-router-dom";
+import { doLogin } from "../api/login";
 import axios from "axios";
 import request from "../utils/request";
-import {Cookies, useCookies} from "react-cookie";
+import { Cookies, useCookies } from "react-cookie";
+import { UserLogin } from "../interfaces/login";
 
 function Copyright(props: any) {
   return (
@@ -38,22 +39,20 @@ export default function Login() {
   const cookie = new Cookies()
   const csrf = cookie.get('csrftoken')
   let navigate = useNavigate();
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
-
-    const loginInfo = {
+    const loginInfo: UserLogin = {
       username: data.get('username'),
       password: data.get('password'),
-    }
+    };
 
     console.log(loginInfo);
-    let url = 'http://localhost:8000/login';
-    request.post(url, loginInfo).then(res => {
-      if (res.status == 200) {
+    doLogin(loginInfo).then((res) => {
+      if (res.status === 200) {
         alert('登录成功。');
-        // navigate('/dashboard')
+        navigate('/dashboard')
       } else {
         console.log(res)
         alert('登录失败：' + res)

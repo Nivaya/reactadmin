@@ -1,5 +1,5 @@
 import axios from "axios";
-import {useCookies, Cookies} from "react-cookie";
+import { useCookies, Cookies } from "react-cookie";
 
 const cookie = new Cookies();
 
@@ -9,10 +9,9 @@ const request = axios.create({
 
 
 request.interceptors.request.use(
-  config => {
-    const csrf = cookie.get('sessionid');
+  (config) => {
+    const csrf = cookie.get('csrftoken');
     console.log(csrf)
-    // localStorage.setItem('sessionid', csrf);
     if (csrf) {
       config.headers = {...config.headers, 'X-CSRFToken': csrf};
     }
@@ -23,8 +22,8 @@ request.interceptors.request.use(
   })
 
 request.interceptors.response.use(
-  res => {
-    return res.data
+  (res) => {
+    return res
   }, error => {
     console.log(error);
     return Promise.reject(error);
